@@ -1,8 +1,8 @@
 FROM golang
 
-WORKDIR /go/src/auth-backend
+WORKDIR /go/src/mail-backend
 
-ADD . /go/src/auth-backend
+ADD . /go/src/mail-backend
 RUN ./install_packages.sh
 
 
