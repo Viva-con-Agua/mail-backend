@@ -1,7 +1,7 @@
 package main
 
 import (
-	n "mail-backend/nats"
+	"mail-backend/nats"
 	"mail-backend/utils"
 
 	"github.com/go-playground/validator"
@@ -22,8 +22,9 @@ func main() {
 
 	// intial loading function
 	utils.LoadConfig()
-	n.SubscribeSignUp()
+	nats.Connect()
+	nats.SubscribeToken()
 	//create echo server
 	e := echo.New()
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":1333"))
 }
