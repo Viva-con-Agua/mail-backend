@@ -17,5 +17,5 @@ var (
 )
 
 func LoadConfig() {
-	configor.Load(&Config, "config.yml")
+	configor.Load(&Config, "config/config.yml")
 }
