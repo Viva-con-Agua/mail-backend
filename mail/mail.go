@@ -56,7 +56,7 @@ func SendMail(t string, msg *Msg) {
 	if err != nil {
 		log.Print("utils.SendMail.Dial: ", err)
 	}
-
+	log.Print("Email : \n", msg)
 	c.StartTLS(tlsconfig)
 
 	// Auth
