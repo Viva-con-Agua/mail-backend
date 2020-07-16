@@ -7,8 +7,10 @@ import (
 var (
 	Config = struct {
 		Mail struct {
-			Host string
-			From string
+			Host     string
+			From     string
+			User     string
+			Password string
 		}
 		Nats struct {
 			Url string

@@ -1,5 +1,9 @@
 nats:
     url: nats://172.2.60.2:4222
 mail:
-    host: 172.2.59.200:25
+    host: localhost:25
+    from: noreply@vivaconagua.org
+    user: mailuser
+    password: mailpassword
+    
 

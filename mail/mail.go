@@ -95,14 +95,14 @@ func SendMail(t string, msg *Msg) {
 
 func SendSignUpMail(address string, token string) error {
 
-	auth := smtp.PlainAuth("", "", "", "172.3.200.3")
+	//auth := smtp.PlainAuth("", "", "", utils.Config.Mail.Host)
 	to := []string{address}
 	msg := []byte("To: " + address + "\r\n" +
 		"Subject: Last SignUp step\r\n" +
 		"\r\n" +
 		token)
 
-	err := smtp.SendMail(utils.Config.Mail.Host, auth, "noreply@vivaconagua.org", to, msg)
+	err := smtp.SendMail(utils.Config.Mail.Host, nil, utils.Config.Mail.From, to, msg)
 	if err != nil {
 		log.Print("utils.SendSignUpMail: ", err)
 	}
