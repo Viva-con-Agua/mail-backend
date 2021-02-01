@@ -8,7 +8,7 @@ import (
 
 func SubscribeToken() {
 	_, err := Nats.Subscribe("mail.token", func(m *models.MailInfo) {
-		mail.SendSignUpMail(m.To, m.Token)
+		mail.SignUp(m.To, m.Token)
 	})
 	if err != nil {
 		log.Print("Nats Error: ", err)

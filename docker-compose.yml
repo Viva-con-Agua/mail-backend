@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  
+    mail-backend:
+        build: .
+        image: mail-backend:latest
+        restart: unless-stopped
+        env_file:
+            - .env
+        links:
+            - mail-db:db
+        depends_on:
+            - mail-db
+        environment:
+            - ALLOW_ORIGINS=${ALLOW_ORIGINS}
+            - COOKIE_SECURE=${COOKIE_SECURE}
+            - SAME_SITE=${SAME_SITE}
+        networks:
+            api_net:
+            db_net:
+
+  
+    mail-db:
+        image: mongo
+        restart: unless-stopped
+        volumes: 
+            - ${VOLUMES}/mail-db/:/data/db/
+        networks:
+            db_net:
+  
+    smtp-relay:
+        image: juanluisbaptiste/postfix
+        environment:
+            - SMTP_SERVER=${SMTP_SERVER}
+            - SMTP_USERNAME=${SMTP_USERNAME}
+            - SMTP_PASSWORD=${SMTP_PASSWORD}
+            - SERVER_HOSTNAME=${SERVER_HOSTNAME}
+            - SMTP_NETWORKS=127.0.0.0/8,172.3.24.0/21
+            - ALWAYS_ADD_MISSING_HEADERS=yes
+        ports:
+            - "25:25" 
+        networks:
+            api_net:
+       
+
+networks:
+    api_net:
+        external:
+            name: api_net
+    db_net:
+        external:
+            name: db_net

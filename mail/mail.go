@@ -1,13 +1,11 @@
 package mail
 
 import (
-	"crypto/tls"
-	"fmt"
 	"log"
-	"mail-backend/utils"
-	"net"
-	"net/mail"
-	"net/smtp"
+	"bytes"
+	"html/template"
+	//"mail-backend/utils"
+	"gopkg.in/gomail.v2"
 )
 
 type (
@@ -16,95 +14,65 @@ type (
 		Body string
 	}
 )
-
-func SignUp(to string, token string) {
+/*
+//ProcessMail
+func ProcessMail(m vmod.Mail, t interface{}) {
 	msg := new(Msg)
 	msg.Subj = "Last SignUp step"
 	msg.Body = token
 	SendMail(to, msg)
+}*/
+
+type TokenMail struct {
+	Name string
+	Token string
+}
+type Template struct {
+	Subject string
+	From string
+	TO string
 }
 
-func SendMail(t string, msg *Msg) {
-	from := mail.Address{"", utils.Config.Mail.From}
-	to := mail.Address{"", t}
-
-	//setup headers
-	headers := make(map[string]string)
-	headers["From"] = from.String()
-	headers["To"] = to.String()
-	headers["Subject"] = msg.Subj
-
-	// Setup message
-	message := ""
-	for k, v := range headers {
-		message += fmt.Sprintf("%s: %s\r\n", k, v)
+func SendMail() error {
+	tem := Template{
+		Subject: "SignUp", 
+		From: "dennis_kleber@mailbox.org", 
+		TO: "d.kleber@vivaconagua.org",
 	}
-	message += "\r\n" + msg.Body
-
-	// Connect to the SMTP Server
-	host, _, _ := net.SplitHostPort(utils.Config.Mail.Host)
-
-	auth := smtp.PlainAuth("", "", "", host)
-
-	// TLS config
-	tlsconfig := &tls.Config{
-		InsecureSkipVerify: true,
-		ServerName:         host,
-	}
-
-	c, err := smtp.Dial(utils.Config.Mail.Host)
+	i := TokenMail{Name: "Dennis", Token: "asdasdasdasd"}
+	t := template.New("login.html")
+	var err error
+	t, err = t.ParseFiles("templates/login.html")
 	if err != nil {
-		log.Print("utils.SendMail.Dial: ", err)
-	}
-	log.Print("Email : \n", msg)
-	c.StartTLS(tlsconfig)
-
-	// Auth
-	if err = c.Auth(auth); err != nil {
-		log.Print("utils.SendMail: ", err)
+		log.Println(err)
 	}
 
-	// To && From
-	if err = c.Mail(from.Address); err != nil {
-		log.Print("utils.SendMail: ", err)
+	log.Print(t)
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, i); err != nil {
+		log.Println(err)
 	}
 
-	if err = c.Rcpt(to.Address); err != nil {
-		log.Print("utils.SendMail: ", err)
-	}
+	result := tpl.String()
 
-	// Data
-	w, err := c.Data()
-	if err != nil {
-		log.Print("utils.SendMail: ", err)
-	}
-
-	_, err = w.Write([]byte(message))
-	if err != nil {
-		log.Print("utils.SendMail: ", err)
-	}
-
-	err = w.Close()
-	if err != nil {
-		log.Print("utils.SendMail: ", err)
-	}
-
-	c.Quit()
-
-}
-
-func SendSignUpMail(address string, token string) error {
+	m := gomail.NewMessage()
+	m.SetHeader("From", tem.From)
+	m.SetHeader("To", tem.TO)
+	m.SetHeader("Subject", tem.Subject)
+	m.SetBody("text/html", result)
+	m.Attach("template.html")// attach whatever you want
 
 	//auth := smtp.PlainAuth("", "", "", utils.Config.Mail.Host)
-	to := []string{address}
-	msg := []byte("To: " + address + "\r\n" +
-		"Subject: Last SignUp step\r\n" +
-		"\r\n" +
-		token)
+	//to := []string{i.TO}
+	//msg := []byte("To: " + i.TO + "\r\n" +
+	//	"Subject: Last SignUp step\r\n" +
+	//	"\r\n" +
+	//	token)
+	d := gomail.NewDialer("127.0.0.1", 25, "", "")
 
-	err := smtp.SendMail(utils.Config.Mail.Host, nil, utils.Config.Mail.From, to, msg)
-	if err != nil {
-		log.Print("utils.SendSignUpMail: ", err)
+	// Send the email to Bob, Cora and Dan.
+	if err := d.DialAndSend(m); err != nil {
+		return err
 	}
 	return err
 }

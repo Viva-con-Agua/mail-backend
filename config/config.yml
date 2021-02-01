@@ -5,5 +5,17 @@ mail:
     from: noreply@vivaconagua.org
     user: mailuser
     password: mailpassword
-    
+db:
+    host: 172.2.80.4
+    user: mail
+    password: mail
+    port: 3306
+    name: mail
+redis:
+    url: 172.2.60.3:6379
+alloworigins:
+    - "http://172.2.20.1"
+cookie:
+    samesite: none
+    secure: false
 

@@ -1,30 +1,42 @@
 package main
 
 import (
-	"mail-backend/nats"
-	"mail-backend/utils"
+	"log"
+	"mail-backend/controllers"
+	"mail-backend/dao"
+	"os"
+	"strings"
 
-	"github.com/go-playground/validator"
-	"github.com/labstack/echo"
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
 )
-
-type (
-	CustomValidator struct {
-		validator *validator.Validate
-	}
-)
-
-func (cv *CustomValidator) Validate(i interface{}) error {
-	return cv.validator.Struct(i)
-}
 
 func main() {
 
 	// intial loading function
-	utils.LoadConfig()
-	nats.Connect()
-	nats.SubscribeToken()
+	godotenv.Load()
+	log.Print(strings.Split(os.Getenv("ALLOW_ORIGINS"), ","))
+	dao.Connect()
+	dao.Init()
+	//nats.SubscribeAddModel()
 	//create echo server
 	e := echo.New()
-	e.Logger.Fatal(e.Start(":1333"))
+	admin := e.Group("/admin")
+	admin.GET("/email/template", controllers.InitTemplate)
+	admin.GET("/email/email", controllers.InitAddress)
+	//e.GET("/", controllers.Mail)
+	apiV1 := e.Group("/v1")
+	email := apiV1.Group("/email")
+	template := email.Group("/template")
+	template.POST("", controllers.InsertTemplate)
+	template.GET("", controllers.ListTemplate)
+	template.PUT("", controllers.UpdateTemplate)
+
+
+	
+	if port, ok := os.LookupEnv("REPO_PORT"); ok {
+		e.Logger.Fatal(e.Start(":" + port))
+	} else {
+		e.Logger.Fatal(e.Start(":1324"))
+	}
 }
