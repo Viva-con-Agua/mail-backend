@@ -4,26 +4,33 @@ import (
 	"log"
 	"mail-backend/controllers"
 	"mail-backend/dao"
+	"mail-backend/env"
 	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 
 	// intial loading function
-	godotenv.Load()
+	env.LoadConfig()
 	log.Print(strings.Split(os.Getenv("ALLOW_ORIGINS"), ","))
 	dao.Connect()
 	dao.Init()
+	cors := middleware.CORSConfig{
+		AllowOrigins:     env.AllowOrigins,
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowCredentials: true,
+	}
+
 	//nats.SubscribeAddModel()
 	//create echo server
 	e := echo.New()
+	e.Use(middleware.CORSWithConfig(cors))
 	admin := e.Group("/admin")
-	admin.GET("/email/template", controllers.InitTemplate)
-	admin.GET("/email/email", controllers.InitAddress)
+	admin.GET("/email/init", controllers.InitModels)
 	//e.GET("/", controllers.Mail)
 	apiV1 := e.Group("/v1")
 	email := apiV1.Group("/email")

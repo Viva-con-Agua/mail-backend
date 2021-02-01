@@ -2,15 +2,29 @@ package nats
 
 import (
 	"log"
+	"mail-backend/dao"
 	"mail-backend/mail"
 	"mail-backend/models"
+
+	"github.com/Viva-con-Agua/vcago/vmod"
+	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/net/context"
 )
 
-func SubscribeToken() {
-	_, err := Nats.Subscribe("mail.token", func(m *models.MailInfo) {
-		mail.SignUp(m.To, m.Token)
+func SubscribeCode() {
+	Nats.Subscribe("mail.code", func(m *vmod.MailCode) {
+		ctx := context.Background()
+		job, err := dao.GetJobWithSubs(bson.M{"case": m.Case, "scope": m.Scope})
+		if err != nil {
+			err.Log(nil)
+		}
+		
+		if job == nil {
+			job, err := dao.GetJobWithSubs(bson.M{"case": m.Case, "scope": "default"})
+			if err != nil {
+				err.Log(nil)
+			}
+		}
+		//Process Mail
 	})
-	if err != nil {
-		log.Print("Nats Error: ", err)
-	}
 }

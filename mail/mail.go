@@ -1,78 +1,55 @@
 package mail
 
 import (
-	"log"
 	"bytes"
 	"html/template"
-	//"mail-backend/utils"
+	"mail-backend/env"
+
 	"gopkg.in/gomail.v2"
 )
 
 type (
-	Msg struct {
-		Subj string
-		Body string
+	//SendMail represents a Email type used for sending an email to the smtp relay.
+	SendMail struct {
+		From      string
+		To        string
+		Subject   string
+		Body      string
+		Interface interface{}
+		Name      string
+		HTML      string
 	}
 )
-/*
-//ProcessMail
-func ProcessMail(m vmod.Mail, t interface{}) {
-	msg := new(Msg)
-	msg.Subj = "Last SignUp step"
-	msg.Body = token
-	SendMail(to, msg)
-}*/
 
-type TokenMail struct {
-	Name string
-	Token string
-}
-type Template struct {
-	Subject string
-	From string
-	TO string
-}
-
-func SendMail() error {
-	tem := Template{
-		Subject: "SignUp", 
-		From: "dennis_kleber@mailbox.org", 
-		TO: "d.kleber@vivaconagua.org",
-	}
-	i := TokenMail{Name: "Dennis", Token: "asdasdasdasd"}
-	t := template.New("login.html")
-	var err error
-	t, err = t.ParseFiles("templates/login.html")
+//CreateBody creates an html/template type from s.HTML using s.Interface and store it in the s.Body param as string
+func (s *SendMail) CreateBody() (*SendMail, error) {
+	t := template.New(s.Name)
+	t, err := t.Parse(s.HTML)
 	if err != nil {
-		log.Println(err)
+		return nil, err
 	}
-
-	log.Print(t)
 	var tpl bytes.Buffer
-	if err := t.Execute(&tpl, i); err != nil {
-		log.Println(err)
+	if err := t.Execute(&tpl, s.Interface); err != nil {
+		return nil, err
 	}
+	s.Body = tpl.String()
+	return s, nil
+}
 
-	result := tpl.String()
-
+//Send connects to the smtp relay and sends the email.
+func (s *SendMail) Send() error {
 	m := gomail.NewMessage()
-	m.SetHeader("From", tem.From)
-	m.SetHeader("To", tem.TO)
-	m.SetHeader("Subject", tem.Subject)
-	m.SetBody("text/html", result)
-	m.Attach("template.html")// attach whatever you want
-
-	//auth := smtp.PlainAuth("", "", "", utils.Config.Mail.Host)
-	//to := []string{i.TO}
-	//msg := []byte("To: " + i.TO + "\r\n" +
-	//	"Subject: Last SignUp step\r\n" +
-	//	"\r\n" +
-	//	token)
-	d := gomail.NewDialer("127.0.0.1", 25, "", "")
+	m.SetHeader("From", s.From)
+	m.SetHeader("To", s.To)
+	m.SetHeader("Subject", s.Subject)
+	m.SetBody("text/html", s.Body)
+	d := gomail.NewDialer(env.MailSMTPHost, env.MailSMTPPort, "", "")
 
 	// Send the email to Bob, Cora and Dan.
-	if err := d.DialAndSend(m); err != nil {
+	err := d.DialAndSend(m)
+	if err != nil {
 		return err
 	}
 	return err
+
 }

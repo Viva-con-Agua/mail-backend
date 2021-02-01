@@ -1,21 +1,18 @@
 package dao
 
 import (
-    "strings"
-    "context"
+	"context"
 	"mail-backend/models"
 
 	"github.com/Viva-con-Agua/vcago/verr"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 //InsertEmailAddress inserts an EmailAddressCreate as EmailAddress into the database
 func InsertEmailAddress(ctx context.Context, create *models.EmailAddressCreate) (*models.EmailAddress, *verr.APIError) {
 	insert := create.Insert()
 	if _, err := DB.Collection("email_addresses").InsertOne(ctx, insert); err != nil {
-		if strings.Contains(err.Error(), "duplicate key") {
-			return nil, verr.NewAPIError(err).Conflict("email_address_duplicate")
-		}
-		return nil, verr.NewAPIError(err).InternalServerError()
+		return nil, verr.MongoHandleError(err)
 	}
 	return insert, nil
 }
@@ -26,7 +23,12 @@ func ListEmailAddress()([]models.EmailAddress, *verr.APIError) {
 }
 
 //GetEmailAddress return one EmailAddress struct from the database
-func GetEmailAddress()(*models.EmailAddress, *verr.APIError) {
+func GetEmailAddress(ctx context.Context, filter bson.M)(*models.EmailAddress, *verr.APIError) {
+	result := new(models.EmailAddress)
+	err := DB.Collection("email_addresses").FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return nil, verr.MongoHandleError(verr.NewMongoCollError(err, "email_addresses"))
+	}
     return nil, nil
 }
 

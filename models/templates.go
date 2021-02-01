@@ -14,6 +14,7 @@ type (
 		Name        string   `bson:"name" json:"name" validate:"required"`
 		Scope 	  string `bson:"scope" json:"scope" validate:"required"`
 		Case string `bson:"case" json:"case" validate:"required"`
+		Subject string `bson:"subject" json:"subject" validate:"required"`
 		HTML        string   `bson:"html" json:"html" validate:"required,html"`
 		Tags        []string `bson:"tags" json:"tags" validate:"required"`
 		Description string   `bson:"description" json:"description" validate:"required"`
@@ -23,13 +24,7 @@ type (
 	//Template represents a Email Template for storing in database.
 	Template struct {
 		ID          string   `bson:"_id" json:"id" validate:"required"`
-		Name        string   `bson:"name" json:"name" validate:"required"`
-		Scope 	  string `bson:"scope" json:"scope" validate:"required"`
-		Case string `bson:"case" json:"case" validate:"required"`
-		HTML        string   `bson:"html" json:"html" validate:"required,html"`
-		Tags        []string `bson:"tags" json:"tags" validate:"required"`
-		Description string   `bson:"description" json:"description" validate:"required"`
-		Type string `bson:"type" json:"type" validate:"required"`
+		*TemplateCreate
 		Modified vmod.Modified `bson:"modified" json:"modified"`
 	}
 )
@@ -43,14 +38,8 @@ var TemplateIndex = []mongo.IndexModel{
 
 func (t *TemplateCreate) Insert() *Template {
 	return &Template{
-		ID: uuid.New().String(),
-		Name: t.Name,
-		Scope: t.Scope,
-		Case: t.Case,
-		HTML: t.HTML,
-		Tags: t.Tags,
-		Description: t.Description,
-		Type: t.Type,
-		Modified: *vmod.NewModified(),
+		uuid.New().String(),
+		t,
+		*vmod.NewModified(),
 	}
 } 
