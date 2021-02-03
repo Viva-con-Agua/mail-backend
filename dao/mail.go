@@ -29,7 +29,7 @@ func GetEmailAddress(ctx context.Context, filter bson.M)(*models.EmailAddress, *
 	if err != nil {
 		return nil, verr.MongoHandleError(verr.NewMongoCollError(err, "email_addresses"))
 	}
-    return nil, nil
+    return result, nil
 }
 
 //UpdateEmailAddress updates a EmailAddrerss struct in the database

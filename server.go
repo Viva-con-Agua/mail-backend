@@ -1,12 +1,11 @@
 package main
 
 import (
-	"log"
 	"mail-backend/controllers"
 	"mail-backend/dao"
 	"mail-backend/env"
+	"mail-backend/nats"
 	"os"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -16,8 +15,9 @@ func main() {
 
 	// intial loading function
 	env.LoadConfig()
-	log.Print(strings.Split(os.Getenv("ALLOW_ORIGINS"), ","))
 	dao.Connect()
+	nats.Connect()
+	nats.Subscribe()
 	dao.Init()
 	cors := middleware.CORSConfig{
 		AllowOrigins:     env.AllowOrigins,

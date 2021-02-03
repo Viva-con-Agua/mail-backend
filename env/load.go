@@ -7,6 +7,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
+//NatsHost is the ip of the nats service.
+var NatsHost string
+//NatsPort is the port ot the nats service.
+var NatsPort string
 //AllowOrigins used in cors header
 var AllowOrigins []string
 //MailSMTPHost is the ip of the smtp relay
@@ -16,19 +20,16 @@ var MailSMTPPort int
 
 //LoadConfig loads the environment variables form .env file and handle errors
 func LoadConfig() {
-    res := true
-    var ok bool
+    var loadEnv vcago.LoadEnv
     godotenv.Load()
-    if AllowOrigins, ok = vcago.GetEnvStringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"}); !ok {
-        res = false
-    }
-    if MailSMTPHost, ok = vcago.GetEnvString("MAIL_SMTP_HOST", "w", "127.0.0.1"); !ok {
-        res = false
-    }
-    if MailSMTPPort, ok = vcago.GetEnvInt("MAIL_SMTP_HOST", "w", 25); !ok {
-        res = false
-    }
-    if !res {
-        log.Fatal("Please set enviroment variables in the .env file. Read logs above.")
-    }
+    NatsHost, loadEnv = loadEnv.GetEnvString("NATS_HOST", "w", "localhost")
+    NatsPort, loadEnv = loadEnv.GetEnvString("NATS_PORT", "w", "4222") 
+    AllowOrigins, loadEnv = loadEnv.GetEnvStringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"})
+    MailSMTPHost, loadEnv = loadEnv.GetEnvString("MAIL_SMTP_HOST", "w", "localhost")
+    MailSMTPPort, loadEnv = loadEnv.GetEnvInt("MAIL_SMTP_HOST", "w", 25)
+    log.Print(loadEnv)
+    loadEnv.Validate()
+
 }
+
+//LoadConfig loads the environment variables form .env file and handle errors

@@ -19,7 +19,7 @@ func InitModels(c echo.Context) error {
 
 <body>
   <p>
-    <strong>Hello {{.Name}}</strong> <br>
+    <strong>Hello {{.UserName}}</strong> <br>
     <a href="http://localhost:8080/confirm/{{.Code}}">Link</a>
 
   </p>
@@ -55,7 +55,7 @@ func InitModels(c echo.Context) error {
    	Name: "register_default",     
 		Scope: "default",
 		Case: "register",  
-		TempateID: template.ID,
+		TemplateID: template.ID,
 		EmailID: email.ID,
    }
 	job, apiErr := dao.InsertJob(c.Request().Context(), defaultJob)

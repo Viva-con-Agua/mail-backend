@@ -73,7 +73,7 @@ func GetJobWithSubs(ctx context.Context, filter bson.M) (*models.JobWithSubs, *v
 	if apiErr != nil {
 		return nil, apiErr
 	}
-	template, apiErr := GetTemplate(ctx, bson.M{"_id": job.TempateID})
+	template, apiErr := GetTemplate(ctx, bson.M{"_id": job.TemplateID})
 	if apiErr != nil {
 		return nil, apiErr
 	}

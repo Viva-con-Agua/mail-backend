@@ -12,9 +12,10 @@ import (
 //InsertTemplate echo controller for handling email template insert 
 func InsertTemplate(c echo.Context) (err error) {
 	body := new(models.TemplateCreate)
-	if apiErr := verr.JSONValidate(c, body); apiErr != nil {
-		return c.JSON(apiErr.Code, apiErr.Body)
+	if err = verr.JSONValidate(c, body); err != nil {
+		return
 	}
+
 	resp, apiErr := dao.InsertTemplate(c.Request().Context(), body)
 	if apiErr != nil {
 		apiErr.Log(c)
@@ -35,8 +36,8 @@ func ListTemplate(c echo.Context) (err error) {
 //UpdateTemplate echo controller for handling email templates updates
 func UpdateTemplate(c echo.Context) (err error) {
 	body := new(models.Template)
-	if apiErr := verr.JSONValidate(c, body); apiErr != nil {
-		return c.JSON(apiErr.Code, apiErr.Body)
+	if err = verr.JSONValidate(c, body); err != nil {
+		return
 	}
 	resp, apiErr := dao.UpdateTemplate(c.Request().Context(), body)
 	if apiErr != nil {

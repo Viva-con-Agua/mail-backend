@@ -1,6 +1,8 @@
 package models
 
 import (
+	//"mail-backend/mail"
+
 	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,14 +15,19 @@ type (
 		Name      string `json:"name" bson:"name" validate:"required"`
 		Scope     string `json:"scope" bson:"scope" validate:"required"`
 		Case      string `json:"case" bson:"case" validate:"required"`
-		TempateID string `json:"template_id" bson:"template_id" validate:"required"`
+		TemplateID string `json:"template_id" bson:"template_id" validate:"required"`
 		EmailID   string `json:"email_id bson:"email_id" validate:"required"`
 	}
 
 	//Job represent a mailing job into database
 	Job struct {
 		ID        string        `json:"id" bson:"_id" validate:"required"`
-		*JobCreate
+		Name      string `json:"name" bson:"name" validate:"required"`
+		Scope     string `json:"scope" bson:"scope" validate:"required"`
+		Case      string `json:"case" bson:"case" validate:"required"`
+		TemplateID string `json:"template_id" bson:"template_id" validate:"required"`
+		EmailID   string `json:"email_id bson:"email_id" validate:"required"`
+
 		Modified  vmod.Modified `json:"modified" bson:"modified" validate:"required"`
 	}
 	//JobWithSubs Job model with Template and EmailAdress model instead of _id's
@@ -46,7 +53,11 @@ var JobsIndex = []mongo.IndexModel{
 func (cr *JobCreate) Insert() *Job {
 	return &Job{
 		uuid.New().String(),
-		cr,
+		cr.Name,
+		cr.Scope,
+		cr.Case,
+		cr.TemplateID,
+		cr.EmailID,
 		*vmod.NewModified(),
 	}
 }

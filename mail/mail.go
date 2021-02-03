@@ -2,6 +2,7 @@ package mail
 
 import (
 	"bytes"
+	"crypto/tls"
 	"html/template"
 	"mail-backend/env"
 
@@ -20,6 +21,17 @@ type (
 		HTML      string
 	}
 )
+
+func NewSendMail(from string, to string, subject string, inter interface{}, name string, html string) *SendMail {
+	return &SendMail{
+		From: from,
+		To: to,
+		Subject: subject,
+		Interface: inter,
+		Name: name,
+		HTML: html,
+	}
+}
 
 //CreateBody creates an html/template type from s.HTML using s.Interface and store it in the s.Body param as string
 func (s *SendMail) CreateBody() (*SendMail, error) {
@@ -43,7 +55,7 @@ func (s *SendMail) Send() error {
 	m.SetHeader("To", s.To)
 	m.SetHeader("Subject", s.Subject)
 	m.SetBody("text/html", s.Body)
-	d := gomail.NewDialer(env.MailSMTPHost, env.MailSMTPPort, "", "")
+	d := gomail.Dialer{Host: env.MailSMTPHost, Port: env.MailSMTPPort, TLSConfig: &tls.Config{InsecureSkipVerify: true}}
 
 	// Send the email to Bob, Cora and Dan.
 	err := d.DialAndSend(m)
