@@ -14,10 +14,10 @@ var Nats = new(nats.EncodedConn)
 
 //Connect connects nats client to server. The client is reachable over Nats.
 func Connect() {
-	natsUrl := "nats://" + env.NatsHost + ":" + env.NatsPort
-	nc, err := nats.Connect(natsUrl)
+	natsURL := "nats://" + env.NatsHost + ":" + env.NatsPort
+	nc, err := nats.Connect(natsURL)
 	if err != nil {
-		log.Fatal(verr.ErrorWithColor, err , " ", "NatsUrl: ", natsUrl)
+		log.Fatal(verr.ErrorWithColor, err , " ", "NatsUrl: ", natsURL)
 	}
 	Nats, err = nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	if err != nil {

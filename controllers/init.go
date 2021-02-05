@@ -8,10 +8,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-
 //InitModels inserts initial EmailTemplates into the database
-func InitModels(c echo.Context) error {
-	htmlRegister := `
+func InitModels(c echo.Context) (err error) {
+	var htmlRegister = `
 <!DOCTYPE html>
 <html>
 
@@ -37,37 +36,34 @@ func InitModels(c echo.Context) error {
 		Description: "default register template to provide register process",
 		Type:        "code",
 	}
-	template, apiErr := dao.InsertTemplate(c.Request().Context(), defaultRegister)
-	if apiErr != nil {
-        apiErr.Log(c)
-		return c.JSON(apiErr.Code, apiErr.Body)
+	template, err := dao.InsertTemplate(c.Request().Context(), defaultRegister)
+	if err != nil {
+		return
 	}
-    defaultEmail := &models.EmailAddressCreate{
-      Email: "dennis_kleber@mailbox.org",
-      Tags: []string{"register", "password_reset", "confim"},
-   }
-   email, apiErr := dao.InsertEmailAddress(c.Request().Context(), defaultEmail)
-   if apiErr != nil {
-      apiErr.Log(c)
-      return c.JSON(apiErr.Code, apiErr.Body)
-   }
-   defaultJob := &models.JobCreate{
-   	Name: "register_default",     
-		Scope: "default",
-		Case: "register",  
+	defaultEmail := &models.EmailAddressCreate{
+		Email: "dennis_kleber@mailbox.org",
+		Tags:  []string{"register", "password_reset", "confim"},
+	}
+	email, err := dao.InsertEmailAddress(c.Request().Context(), defaultEmail)
+	if err != nil {
+		return
+	}
+	defaultJob := &models.JobCreate{
+		Name:       "register_default",
+		Scope:      "default",
+		Case:       "register",
 		TemplateID: template.ID,
-		EmailID: email.ID,
-   }
-	job, apiErr := dao.InsertJob(c.Request().Context(), defaultJob)
-   if apiErr != nil {
-      apiErr.Log(c)
-      return c.JSON(apiErr.Code, apiErr.Body)
-   }
+		EmailID:    email.ID,
+	}
+	job, err := dao.InsertJob(c.Request().Context(), defaultJob)
+	if err != nil {
+		return
+	}
 
 	type result struct {
 		Template models.Template
-		Email models.EmailAddress
-		Job models.Job
+		Email    models.EmailAddress
+		Job      models.Job
 	}
 	return c.JSON(http.StatusCreated, result{Template: *template, Email: *email, Job: *job})
 }

@@ -15,21 +15,18 @@ func InsertTemplate(c echo.Context) (err error) {
 	if err = verr.JSONValidate(c, body); err != nil {
 		return
 	}
-
-	resp, apiErr := dao.InsertTemplate(c.Request().Context(), body)
-	if apiErr != nil {
-		apiErr.Log(c)
-		return c.JSON(apiErr.Code, apiErr.Body)
+	resp, err := dao.InsertTemplate(c.Request().Context(), body)
+	if err != nil {
+		return 
 	}
 	return c.JSON(http.StatusCreated, resp)
 }
 
 //ListTemplate echo controller for handling email template list.
 func ListTemplate(c echo.Context) (err error) {
-	resp, apiErr := dao.ListTemplate(c.Request().Context())
-	if apiErr != nil {
-		apiErr.Log(c)
-		return c.JSON(apiErr.Code, apiErr.Body)
+	resp, err := dao.ListTemplate(c.Request().Context())
+	if err != nil {
+		return
 	}
 	return c.JSON(http.StatusOK, resp)
 }
@@ -39,12 +36,10 @@ func UpdateTemplate(c echo.Context) (err error) {
 	if err = verr.JSONValidate(c, body); err != nil {
 		return
 	}
-	resp, apiErr := dao.UpdateTemplate(c.Request().Context(), body)
-	if apiErr != nil {
-		apiErr.Log(c)
-		return c.JSON(apiErr.Code, apiErr.Body)
+	err = dao.UpdateTemplate(c.Request().Context(), body)
+	if err != nil {
+		return
 	}
-	return c.JSON(http.StatusCreated, resp)
-
+	return c.JSON(http.StatusCreated, body)
 }
 
