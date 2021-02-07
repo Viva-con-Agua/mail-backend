@@ -6,38 +6,38 @@ import (
 
 	"github.com/Viva-con-Agua/vcago/verr"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const coll = models.JobsColl
+
 //InsertJob dao
-func InsertJob(ctx context.Context, create *models.JobCreate) (*models.Job, error) {
-	insert := create.Insert()
-	if _, err := DB.Collection("jobs").InsertOne(ctx, insert); err != nil {
-		return nil, verr.MongoInsertOneError(ctx, err, "jobs")
+func InsertJob(ctx context.Context, insert *models.Job) (err error) {
+	if _, err := DB.Collection(coll).InsertOne(ctx, insert); err != nil {
+		return verr.MongoInsertOneError(ctx, err, coll)
 	}
-	return insert, nil
+	return nil
 }
 		
 	
 //ListJobs returns all Jobs from database
-func ListJobs(ctx context.Context) ( list []models.Job, err error) {
-	cursor, err := DB.Collection("jobs").Find(ctx, bson.M{})
-	if err != nil {
+func ListJobs(ctx context.Context, filter bson.M) ( result []models.Job, err error) {
+	var cursor *mongo.Cursor
+	if cursor, err = DB.Collection(coll).Find(ctx, filter); err != nil {
 		return nil, verr.InternalServerError(ctx, err)
 	}
-	if err = cursor.All(ctx, &list); err != nil {
+	if err = cursor.All(ctx, &result); err != nil {
 		return nil, verr.InternalServerError(ctx, err)
 	}
-	return list, nil
+	return
 }
 
 //GetJob return Job by filter
-func GetJob(ctx context.Context, filter bson.M) (*models.Job, error) {
-	result := new(models.Job)
-	err := DB.Collection("jobs").FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		return nil, verr.MongoFindOneError(ctx, err, "jobs")
+func GetJob(ctx context.Context, filter bson.M) (result *models.Job, err error) {
+	if err = DB.Collection(coll).FindOne(ctx, filter).Decode(&result); err != nil {
+		return nil, verr.MongoFindOneError(ctx, err, coll)
 	}
-	return result, nil
+	return
 }
 
 //UpdateJob updates an Job in the mail database.
@@ -73,9 +73,15 @@ func GetJobWithSubs(ctx context.Context, filter bson.M) (*models.JobWithSubs, er
 	if err != nil {
 		return nil, err
 	}
-	template, err := GetTemplate(ctx, bson.M{"_id": job.TemplateID})
-	if err != nil {
-		return nil, err
+	var templates = make(map[string]models.Template)
+	for v := range job.Templates {
+		var template *models.Template
+		template, err = GetTemplate(ctx, bson.M{"_id": job.Templates[v]})
+		if err != nil {
+			return nil, err
+		}
+		templates[v] = *template
 	}
-	return job.JobWithSubs(template, email), nil
+		
+	return job.JobWithSubs(templates, email), nil
 }

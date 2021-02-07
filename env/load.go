@@ -21,7 +21,7 @@ var MailSMTPPort int
 //LoadConfig loads the environment variables form .env file and handle errors
 func LoadConfig() {
     var loadEnv vcago.LoadEnv
-    godotenv.Load()
+    godotenv.Load(".env")
     NatsHost, loadEnv = loadEnv.GetEnvString("NATS_HOST", "w", "localhost")
     NatsPort, loadEnv = loadEnv.GetEnvString("NATS_PORT", "w", "4222") 
     AllowOrigins, loadEnv = loadEnv.GetEnvStringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"})

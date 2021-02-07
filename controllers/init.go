@@ -55,7 +55,8 @@ func InitModels(c echo.Context) (err error) {
 		TemplateID: template.ID,
 		EmailID:    email.ID,
 	}
-	job, err := dao.InsertJob(c.Request().Context(), defaultJob)
+	var job = defaultJob.Insert()
+	err = dao.InsertJob(c.Request().Context(), job)
 	if err != nil {
 		return
 	}

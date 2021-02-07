@@ -38,7 +38,9 @@ func main() {
 	template.POST("", controllers.InsertTemplate)
 	template.GET("", controllers.ListTemplate)
 	template.PUT("", controllers.UpdateTemplate)
-
+	
+	jobs := email.Group("/jobs")
+	jobs.GET("", controllers.ListJob)
 
 	
 	if port, ok := os.LookupEnv("REPO_PORT"); ok {

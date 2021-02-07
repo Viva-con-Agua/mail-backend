@@ -25,14 +25,26 @@ func SubscribeCode() {
 		if job == nil {
 			job, err = dao.GetJobWithSubs(ctx, bson.M{"case": m.JobCase, "scope": "default"})
 			if err == nil {
-				sendMail := mail.NewSendMail(
-					job.Email.Email,
-					m.To,
-					job.Template.Subject,
-					m,
-					job.Template.Name,
-					job.Template.HTML,
-				)
+				var sendMail *mail.SendMail
+				if _, ok := job.Template[m.Country]; ok  {
+					sendMail = mail.NewSendMail(
+						job.Email.Email,
+						m.To,
+						job.Template[m.Country].Subject,
+						m,
+						job.Template[m.Country].Name,
+						job.Template[m.Country].HTML,
+					)
+				} else {
+					sendMail = mail.NewSendMail(
+						job.Email.Email,
+						m.To,
+						job.Template["default"].Subject,
+						m,
+						job.Template["default"].Name,
+						job.Template["default"].HTML,
+					)
+				}
 				sendMail, err := sendMail.CreateBody()
 				if err != nil {
 					log.Print(verr.ErrorWithColor, err)
