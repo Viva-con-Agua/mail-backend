@@ -1,0 +1,9 @@
+{
+    "email": "test2@test.de",
+    "password": "asdasdada",
+    "host": "test",
+    "port": 23,
+    "scope": [
+      "default"
+    ]
+}

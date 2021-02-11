@@ -1,0 +1,15 @@
+{
+    "name": "register_default",
+    "case": "register",
+    "scope": "default",
+    "template": [
+        {
+            "case": "default",
+            "country": "en_EN",
+            "html": "PCFET0NUWVBFIGh0bWw+IAo8aHRtbD4KPC9oZWFkPgo8Ym9keT4KICA8cD4KICAgIDxzdHJvbmc+SGVsbG8ge3suVXNlck5hbWV9fTwvc3Ryb25nPiA8YnI+CiAgICA8YSBocmVmPSJodHRwczovL2F1dGgudml2YWNvbmFndWEub3JnLyMvY29uZmlybS97ey5Db2RlfX0iPkxpbms8L2E+CiAgPC9wPgo8L2JvZHk+CjwvaHRtbD4K",
+            "subject": "Finish register"
+        }
+    ],
+    "email_id": "7017dcbb-b134-42d8-8a5e-9fd047d584c8"
+
+}

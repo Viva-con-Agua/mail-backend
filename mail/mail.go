@@ -3,8 +3,10 @@ package mail
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/base64"
 	"html/template"
 	"mail-backend/env"
+	"mail-backend/models"
 
 	"gopkg.in/gomail.v2"
 )
@@ -12,6 +14,9 @@ import (
 type (
 	//SendMail represents a Email type used for sending an email to the smtp relay.
 	SendMail struct {
+		Host      string
+		Port      int
+		Password  string
 		From      string
 		To        string
 		Subject   string
@@ -22,21 +27,24 @@ type (
 	}
 )
 
-func NewSendMail(from string, to string, subject string, inter interface{}, name string, html string) *SendMail {
+func NewSendMail(email *models.EmailAddress, to string, subject string, inter interface{}, html string) *SendMail {
 	return &SendMail{
-		From: from,
-		To: to,
-		Subject: subject,
+		Host: email.Host,
+		Port: email.Port,
+		Password: email.Password,
+		From:      email.Email,
+		To:        to,
+		Subject:   subject,
 		Interface: inter,
-		Name: name,
-		HTML: html,
+		HTML:      html,
 	}
 }
 
 //CreateBody creates an html/template type from s.HTML using s.Interface and store it in the s.Body param as string
 func (s *SendMail) CreateBody() (*SendMail, error) {
 	t := template.New(s.Name)
-	t, err := t.Parse(s.HTML)
+	html, _ := base64.StdEncoding.DecodeString(s.HTML)
+	t, err := t.Parse(string(html))
 	if err != nil {
 		return nil, err
 	}
@@ -55,13 +63,20 @@ func (s *SendMail) Send() error {
 	m.SetHeader("To", s.To)
 	m.SetHeader("Subject", s.Subject)
 	m.SetBody("text/html", s.Body)
-	d := gomail.Dialer{Host: env.MailSMTPHost, Port: env.MailSMTPPort, TLSConfig: &tls.Config{InsecureSkipVerify: true}}
-
-	// Send the email to Bob, Cora and Dan.
-	err := d.DialAndSend(m)
-	if err != nil {
-		return err
+	if env.LogLevel == "debug" {
+		d := gomail.Dialer{Host: env.MailSMTPHost, Port: env.MailSMTPPort, TLSConfig: &tls.Config{InsecureSkipVerify: true}}
+		// Send the email to Bob, Cora and Dan.
+		err := d.DialAndSend(m)
+		if err != nil {
+			return err
+		}
+	} else {
+		dprod := gomail.NewDialer(s.Host, s.Port, s.From, s.Password)
+		err := dprod.DialAndSend(m)
+		if err != nil {
+			return err
+		}
 	}
-	return err
+	return nil
 
 }

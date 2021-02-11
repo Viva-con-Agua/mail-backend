@@ -1,3 +1,6 @@
 .env
 volumes
 *.log
+
+.email.json
+.job.json

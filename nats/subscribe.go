@@ -1,6 +1,7 @@
 package nats
 
 import (
+	"mail-backend/models"
 	"log"
 	"mail-backend/dao"
 	"mail-backend/mail"
@@ -26,32 +27,25 @@ func SubscribeCode() {
 			job, err = dao.GetJobWithSubs(ctx, bson.M{"case": m.JobCase, "scope": "default"})
 			if err == nil {
 				var sendMail *mail.SendMail
-				if _, ok := job.Template[m.Country]; ok  {
+				template := models.GetTemplate(job.Templates, m.Country)
+				if template != nil {
 					sendMail = mail.NewSendMail(
-						job.Email.Email,
+						&job.Email,
 						m.To,
-						job.Template[m.Country].Subject,
+						template.Subject,
 						m,
-						job.Template[m.Country].Name,
-						job.Template[m.Country].HTML,
+						template.HTML,
 					)
+					sendMail, err = sendMail.CreateBody()
+					if err != nil {
+						log.Print(verr.ErrorWithColor, err)
+					}
+					err = sendMail.Send()
+					if err != nil {
+						log.Print(verr.ErrorWithColor, err)
+					}
 				} else {
-					sendMail = mail.NewSendMail(
-						job.Email.Email,
-						m.To,
-						job.Template["default"].Subject,
-						m,
-						job.Template["default"].Name,
-						job.Template["default"].HTML,
-					)
-				}
-				sendMail, err := sendMail.CreateBody()
-				if err != nil {
-					log.Print(verr.ErrorWithColor, err)
-				}
-				err = sendMail.Send()
-				if err != nil {
-					log.Print(verr.ErrorWithColor, err)
+					log.Print(verr.ErrorWithColor, "no template found")
 				}
 			} else {
 				log.Print(verr.ErrorWithColor, err)

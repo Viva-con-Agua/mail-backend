@@ -9,12 +9,11 @@ import (
 )
 
 //InsertEmailAddress inserts an EmailAddressCreate as EmailAddress into the database
-func InsertEmailAddress(ctx context.Context, create *models.EmailAddressCreate) (*models.EmailAddress, error) {
-	insert := create.Insert()
+func InsertEmailAddress(ctx context.Context, insert *models.EmailAddress) (err error) {
 	if _, err := DB.Collection("email_addresses").InsertOne(ctx, insert); err != nil {
-		return nil, verr.MongoInsertOneError(ctx, err, "email_addresses")
+		return verr.MongoInsertOneError(ctx, err, "email_addresses")
 	}
-	return insert, nil
+	return err
 }
 
 //ListEmailAddress return a list of EmailAddress structs from the database

@@ -14,7 +14,7 @@ import (
 //InsertJob handler for inserting job into jobs collection.
 func InsertJob(c echo.Context) (err error) {
     var ctx = c.Request().Context()
-    var body *models.JobCreate
+    body := new(models.JobCreate)
     if err = verr.JSONValidate(c, body); err != nil {
         return
     }

@@ -11,7 +11,7 @@ import (
 
 //InsertTemplate echo controller for handling email template insert 
 func InsertTemplate(c echo.Context) (err error) {
-	body := new(models.TemplateCreate)
+	body := new(models.Template)
 	if err = verr.JSONValidate(c, body); err != nil {
 		return
 	}

@@ -72,7 +72,7 @@ func GetJobWithSubs(ctx context.Context, filter bson.M) (*models.JobWithSubs, er
 	email, err := GetEmailAddress(ctx, bson.M{"_id": job.EmailID})
 	if err != nil {
 		return nil, err
-	}
+	}/*
 	var templates = make(map[string]models.Template)
 	for v := range job.Templates {
 		var template *models.Template
@@ -81,7 +81,7 @@ func GetJobWithSubs(ctx context.Context, filter bson.M) (*models.JobWithSubs, er
 			return nil, err
 		}
 		templates[v] = *template
-	}
+	}*/
 		
-	return job.JobWithSubs(templates, email), nil
+	return job.JobWithSubs(email), nil
 }

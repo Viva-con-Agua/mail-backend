@@ -9,8 +9,7 @@ import (
 )
 
 //InsertTemplate dao
-func InsertTemplate(ctx context.Context, create *models.TemplateCreate) (*models.Template, error) {
-	insert := create.Insert()
+func InsertTemplate(ctx context.Context, insert *models.Template) (*models.Template, error) {
 	if _, err := DB.Collection("templates").InsertOne(ctx, insert); err != nil {
 		return nil, verr.MongoInsertOneError(ctx, err, "templates")
 	}
@@ -41,10 +40,10 @@ func GetTemplate(ctx context.Context, filter bson.M) (*models.Template, error) {
 
 //UpdateTemplate updates an given app in database.
 func UpdateTemplate(ctx context.Context, update *models.Template) (err error) {
-	update.Modified = *update.Modified.Update()
+	//update.Modified = *update.Modified.Update()
 	result, err := DB.Collection("templates").UpdateOne(
 		ctx,
-		bson.M{"_id": update.ID},
+		bson.M{"_id": update},
 		bson.M{"$set": update},
 	)
 	if err = verr.MongoUpdateOneError(ctx, err, "templates", result); err != nil {
@@ -55,7 +54,7 @@ func UpdateTemplate(ctx context.Context, update *models.Template) (err error) {
 
 //DeleteTemplate deletes a given application
 func DeleteTemplate(ctx context.Context, delete *models.Template) (err error){
-	result, err := DB.Collection("templates").DeleteOne(ctx, bson.M{"_id": delete.ID})
+	result, err := DB.Collection("templates").DeleteOne(ctx, bson.M{"_id": delete})
 	if err = verr.MongoDeleteOneError(ctx, err, "templates", result); err != nil {
 		return err
 	}

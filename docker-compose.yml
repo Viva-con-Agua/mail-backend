@@ -4,7 +4,7 @@ services:
   
     mail-backend:
         build: .
-        image: mail-backend:latest
+        image: vivaconagua/mail-backend:latest
         restart: unless-stopped
         env_file:
             - .env
