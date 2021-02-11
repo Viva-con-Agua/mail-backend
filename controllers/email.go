@@ -12,14 +12,14 @@ import (
 //InsertEmail handler for inserting job into jobs collection.
 func InsertEmail(c echo.Context) (err error) {
     var ctx = c.Request().Context()
-    body := new(models.EmailAddressCreate)
+    body := new(models.EmailAddress)
     if err = verr.JSONValidate(c, body); err != nil {
         return
     }
-    var address = body.Insert()
-    if err = dao.InsertEmailAddress(ctx, address); err != nil {
+    //var address = body.Insert()
+    if err = dao.InsertEmailAddress(ctx, body); err != nil {
         return
     }
-    return c.JSON(vmod.RespCreated(address, "mail_address"))
+    return c.JSON(vmod.RespCreated(body, "mail_address"))
 }
 

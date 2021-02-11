@@ -54,7 +54,10 @@ var JobsIndex = []mongo.IndexModel{
 		Keys:    bson.D{{Key: "_id", Value: 1}, {Key: "template.case", Value: 1}},
 		Options: options.Index().SetUnique(true),
 	},
-
+	{
+		Keys:    bson.D{{Key: "case", Value: 1}, {Key: "scope", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	},
 }
 
 //Insert creates Job for inserting into database

@@ -36,8 +36,8 @@ func main() {
 	e.Validator = &verr.JSONValidator{Validator: validator.New()}
 	admin := e.Group("/admin")
 	admin.GET("/email/init", controllers.InitModels)
-	admin.POST("/email", controllers.InsertEmail)
-	admin.POST("/job", controllers.InsertJob)
+	admin.POST("/email/email", controllers.InsertEmail)
+	admin.POST("/email/job", controllers.InsertJob)
 	//e.GET("/", controllers.Mail)
 	apiV1 := e.Group("/v1")
 	email := apiV1.Group("/email")

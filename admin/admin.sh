@@ -1,19 +1,19 @@
 #!/bin/bash
 create_email(){
    curl -X POST -H "Content-Type: application/json" \
-       -d @.email.js \
-    http://localhost:1323/admin/email
+       -d @.email.json \
+    http://localhost:1337/admin/email/email
 }
 
 create_job(){
    curl -X POST -H "Content-Type: application/json" \
-       -d @.job.json \
-    http://localhost:1323/admin/job
+       -d @${1} \
+    http://localhost:1323/admin/email/job
 
 }
 
 case $1 in
     email) create_email ;;
-    job) create_job;;
+    job) create_job $2;;
     *)
 esac
