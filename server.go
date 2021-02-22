@@ -31,7 +31,7 @@ func main() {
 	//create echo server
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(cors))
-// Middleware
+	// Middleware
 	e.Use(middleware.CORSWithConfig(vcago.NewCORSConfig()))
 	e.Validator = &verr.JSONValidator{Validator: validator.New()}
 	admin := e.Group("/admin")
@@ -52,6 +52,6 @@ func main() {
 	if port, ok := os.LookupEnv("REPO_PORT"); ok {
 		e.Logger.Fatal(e.Start(":" + port))
 	} else {
-		e.Logger.Fatal(e.Start(":1323"))
+		e.Logger.Fatal(e.Start(":" + env.AppPort))
 	}
 }
