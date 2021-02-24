@@ -3,7 +3,7 @@ module mail-backend
 go 1.15
 
 require (
-	github.com/Viva-con-Agua/vcago v0.1.6
+	github.com/Viva-con-Agua/vcago v0.1.9
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/google/uuid v1.2.0
 	github.com/joho/godotenv v1.3.0
