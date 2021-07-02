@@ -49,6 +49,10 @@ func main() {
 	jobs := email.Group("/jobs")
 	jobs.GET("", controllers.ListJob)
 
+	contact := email.Group("/contact")
+	contact.POST("", controllers.InsertContactAt)
+	contact.GET("", controllers.ListContactAt)
+
 	if port, ok := os.LookupEnv("REPO_PORT"); ok {
 		e.Logger.Fatal(e.Start(":" + port))
 	} else {

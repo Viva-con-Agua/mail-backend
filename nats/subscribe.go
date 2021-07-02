@@ -1,10 +1,10 @@
 package nats
 
 import (
-	"mail-backend/models"
 	"log"
 	"mail-backend/dao"
 	"mail-backend/mail"
+	"mail-backend/models"
 
 	"github.com/Viva-con-Agua/vcago/verr"
 	"github.com/Viva-con-Agua/vcago/vmod"
