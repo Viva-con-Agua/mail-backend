@@ -7,10 +7,5 @@ stage:
 	docker push vivaconagua/mail-backend:stage
 
 prod:
-	docker push vivaconagua/mail-backend:stage
-
-db:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
-
-execDB:
-	docker-compose exec mail-db mongo mail
+	docker tag vivaconagua/mail-backend:stage vivaconagua/mail-backend:latest
+	docker push vivaconagua/mail-backend:latest
