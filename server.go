@@ -48,6 +48,8 @@ func main() {
 
 	jobs := email.Group("/jobs")
 	jobs.GET("", controllers.ListJob)
+	jobs.POST("", controllers.InsertJob)
+	jobs.PUT("", controllers.UpdateJob)
 
 	contact := email.Group("/contact")
 	contact.POST("", controllers.InsertContactAt)
